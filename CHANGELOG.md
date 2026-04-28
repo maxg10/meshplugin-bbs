@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.3 (2026-04-28)
+- fix: always deliver store&forward queue regardless of is_new flag
+
 ## v1.0.1 (2026-04-28)
 - Fix: on_node_update guard against None node parameter
 - Fix: on_node_update use correct database connection (self._db)

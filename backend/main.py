@@ -144,8 +144,7 @@ class BbsPlugin(MeshPlugin):
             for chunk in self._chunks(welcome):
                 await self.send_mesh_message(chunk, to_id=from_node, channel=0)
                 await asyncio.sleep(0.5)
-        else:
-            await self._deliver_sf_queue(from_node)
+        await self._deliver_sf_queue(from_node)
 
         # must start with !bbs or bbs
         if not re.match(r'(?i)^!?bbs\b', text):
@@ -475,7 +474,7 @@ class BbsPlugin(MeshPlugin):
         name  = self.config.get('bbs_name', 'MeshBBS')
         stats = {
             'bbs_name': name,
-            'version':  '1.0.0',
+            'version':  '1.0.3',
             'messages': self._db.execute('SELECT COUNT(*) FROM messages').fetchone()[0],
             'mail':     self._db.execute('SELECT COUNT(*) FROM mail').fetchone()[0],
             'nodes':    self._db.execute('SELECT COUNT(*) FROM node_directory').fetchone()[0],
