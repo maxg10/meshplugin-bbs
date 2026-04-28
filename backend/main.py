@@ -1,6 +1,7 @@
 # Meshtastic BBS Plugin — maxg10/bbs — GPL-3.0
 """FidoNet-inspired BBS plugin: bulletin areas, netmail, node directory, store & forward."""
 
+import asyncio
 import json
 import os
 import re
@@ -110,7 +111,7 @@ class BbsPlugin(MeshPlugin):
         notice = (f'[BBS] {count} new mail item{"s" if count > 1 else ""}.'
                   ' Send BBS INBOX to read.')
         for chunk in self._chunks(notice):
-            await self.send_message(node_id, chunk)
+            await self.send_mesh_message(chunk, to_id=node_id, channel=0)
         now = int(time.time())
         ids = [r['id'] for r in rows]
         self._db.execute(
@@ -122,25 +123,37 @@ class BbsPlugin(MeshPlugin):
 
     # ── incoming mesh hooks ──────────────────────────────────────────────────
 
-    async def on_mesh_message(self, from_node: str, text: str, node_info: dict = None):
-        info   = node_info or {}
+    async def on_message(self, message: dict):
+        from_node = message.get('from_id', '')
+        text = (message.get('text') or '').strip()
+        to_id = message.get('to_id', '^all')
+        is_dm = message.get('is_dm', False)
+
+        if not from_node or not text:
+            return
+
         is_new = self._is_new_node(from_node)
-        self._upsert_node(from_node, info.get('short_name'), info.get('long_name'))
+        from_name = message.get('from_name', from_node)
+        self._upsert_node(from_node, from_name, from_name)
 
         if is_new and self.config.get('auto_welcome', True):
             bbs_name = self.config.get('bbs_name', 'MeshBBS')
-            welcome  = self.config.get('welcome_message',
-                                       f'Welcome to {bbs_name}! Type BBS HELP for commands.')
+            welcome = self.config.get('welcome_message',
+                        f'Welcome to {bbs_name}! Type !bbs help for commands.')
+            await asyncio.sleep(3)
             for chunk in self._chunks(welcome):
-                await self.send_message(from_node, chunk)
+                await self.send_mesh_message(chunk, to_id=from_node, channel=0)
+                await asyncio.sleep(0.5)
         else:
             await self._deliver_sf_queue(from_node)
 
-        text = text.strip()
-        if not re.match(r'(?i)^bbs\b', text):
+        # must start with !bbs or bbs
+        if not re.match(r'(?i)^!?bbs\b', text):
             return
 
-        await self._handle(from_node, text[3:].strip())
+        self.log(f"Command from {from_name}: {text}")
+        cmd = re.sub(r'(?i)^!?bbs\s*', '', text).strip()
+        await self._handle(from_node, cmd)
 
     async def on_node_update(self, node):
         try:
@@ -208,7 +221,7 @@ class BbsPlugin(MeshPlugin):
             reply = f'Unknown: {cmd}. Type BBS HELP.'
 
         for chunk in self._chunks(reply):
-            await self.send_message(from_node, chunk)
+            await self.send_mesh_message(chunk, to_id=from_node, channel=0)
 
         await self.broadcast_ws('bbs_updates', json.dumps(
             {'event': 'command', 'from': from_node, 'cmd': cmd}
