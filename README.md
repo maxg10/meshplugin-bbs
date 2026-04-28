@@ -87,6 +87,30 @@ Plugin settings (Mapper → Config → Plugins → Meshtastic BBS → Settings):
 
 The BBS stores data in `data/bbs.sqlite3` inside the plugin's directory. The file is created automatically on first enable. Back it up with the rest of your mapper data.
 
+## Commands Reference
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `!bbs` or `!bbs help` | Show command list | `!bbs help` |
+| `!bbs info` | BBS info: name, sysop, stats | `!bbs info` |
+| `!bbs nodes` | List nodes in directory | `!bbs nodes` |
+| `!bbs list` | List last 5 bulletin posts | `!bbs list` |
+| `!bbs list <area>` | List posts in area | `!bbs list TECH` |
+| `!bbs read <id>` | Read post by ID | `!bbs read 42` |
+| `!bbs post <subject> \| <body>` | Create new post | `!bbs post Hello \| First post!` |
+| `!bbs areas` | List available board areas | `!bbs areas` |
+| `!bbs inbox` | List unread mail | `!bbs inbox` |
+| `!bbs inbox all` | List all mail | `!bbs inbox all` |
+| `!bbs read mail <id>` | Read specific mail | `!bbs read mail 3` |
+| `!bbs send <node> \| <subject> \| <body>` | Send private mail | `!bbs send !abc123 \| Hi \| Hello there` |
+| `!bbs delete mail <id>` | Delete mail | `!bbs delete mail 3` |
+| `!bbs whois <node_id>` | Lookup node info | `!bbs whois !abc123` |
+
+**Note:** Your node must be ROUTER_CLIENT (not ROUTER) to receive DM commands.
+Alternatively, send commands on the primary channel — BBS listens to all traffic.
+
+See [docs/COMMANDS.md](docs/COMMANDS.md) for the full reference with examples and FidoNet comparison.
+
 ## License
 
 GPL-3.0 — see [LICENSE](LICENSE)

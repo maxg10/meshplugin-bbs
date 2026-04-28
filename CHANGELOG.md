@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.0.1 (2026-04-28)
+- Fix: on_node_update guard against None node parameter
+- Fix: on_node_update use correct database connection (self._db)
+- Fix: on_node_update use correct column names (short_name, long_name)
+- Docs: Added full command reference in README.md and docs/COMMANDS.md
+- Docs: FidoNet comparison table
+
 ## v1.0.0 (2026-04-27)
 - Initial release
 - Bulletin board with areas (GENERAL, TECH, LOCAL, MESH)

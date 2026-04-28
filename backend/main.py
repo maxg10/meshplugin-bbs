@@ -144,21 +144,23 @@ class BbsPlugin(MeshPlugin):
 
     async def on_node_update(self, node):
         try:
+            if node is None:
+                return
             node_id = node.get('id') or node.get('node_id')
             name = node.get('name') or node.get('long_name') or node_id
-            role = node.get('role', 'CLIENT')
             if not node_id:
                 return
             now = int(time.time())
-            db = self.get_database()
-            db.execute('''INSERT INTO node_directory (node_id, name, last_seen, first_seen, role)
-                VALUES (?, ?, ?, ?, ?)
-                ON CONFLICT(node_id) DO UPDATE SET
-                    name=excluded.name,
-                    last_seen=excluded.last_seen,
-                    role=excluded.role''',
-                (node_id, name, now, now, role))
-            db.commit()
+            self._db.execute(
+                'INSERT INTO node_directory (node_id, short_name, long_name, first_seen, last_seen) '
+                'VALUES (?,?,?,?,?) '
+                'ON CONFLICT(node_id) DO UPDATE SET '
+                '  last_seen  = excluded.last_seen, '
+                '  short_name = COALESCE(excluded.short_name, short_name), '
+                '  long_name  = COALESCE(excluded.long_name,  long_name)',
+                (node_id, name, name, now, now)
+            )
+            self._db.commit()
             await self._deliver_sf_queue(node_id)
         except Exception as e:
             self.log(f"on_node_update error: {e}")
