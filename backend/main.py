@@ -219,8 +219,10 @@ class BbsPlugin(MeshPlugin):
         else:
             reply = f'Unknown: {cmd}. Type BBS HELP.'
 
+        await asyncio.sleep(2)
         for chunk in self._chunks(reply):
             await self.send_mesh_message(chunk, to_id=from_node, channel=0)
+            await asyncio.sleep(0.5)
 
         await self.broadcast_ws('bbs_updates', json.dumps(
             {'event': 'command', 'from': from_node, 'cmd': cmd}

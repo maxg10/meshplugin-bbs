@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.4 (2026-04-29)
+- fix: add 2s delay before reply chunks to avoid serial collision
+- fix: add 0.5s inter-chunk delay in `_handle` reply loop
+
 ## v1.0.3 (2026-04-28)
 - fix: always deliver store&forward queue regardless of is_new flag
 
