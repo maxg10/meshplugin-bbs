@@ -216,6 +216,8 @@ class BbsPlugin(MeshPlugin):
             reply = self._c_nodes()
         elif cmd in ('INFO', 'STATUS', 'S'):
             reply = self._c_info()
+        elif cmd in ('ABOUT', 'AB'):
+            reply = self._c_about()
         else:
             reply = f'Unknown: {cmd}. Type BBS HELP.'
 
@@ -233,7 +235,7 @@ class BbsPlugin(MeshPlugin):
     def _c_help(self):
         name = self.config.get('bbs_name', 'MeshBBS')
         return (f'{name}: LIST | READ <area> [#] | READ MAIL <id> | POST <area> <msg>'
-                ' | SEND <node> <msg> | INBOX | DEL MAIL <id> | WHOIS <node> | NODES | INFO')
+                ' | SEND <node> <msg> | INBOX | DEL MAIL <id> | WHOIS <node> | NODES | INFO | ABOUT')
 
     def _c_list(self):
         parts = [
@@ -381,6 +383,11 @@ class BbsPlugin(MeshPlugin):
         mail  = self._db.execute('SELECT COUNT(*) FROM mail').fetchone()[0]
         nodes = self._db.execute('SELECT COUNT(*) FROM node_directory').fetchone()[0]
         return f'{name} v1.0 | Msgs:{msgs} Mail:{mail} Nodes:{nodes}'
+
+    def _c_about(self):
+        bbs_name = self.config.get('bbs_name', 'MeshBBS')
+        default = f'{bbs_name}\n📡 Meshtastic Network Mapper\n🌍 meshtastic.world\nTry it: !bbs help'
+        return self.config.get('about_message', default)
 
     # ── API route handlers ───────────────────────────────────────────────────
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.5 (2026-05-01)
+- feat: !bbs about command with configurable about_message config field
+
 ## v1.0.4 (2026-04-29)
 - fix: add 2s delay before reply chunks to avoid serial collision
 - fix: add 0.5s inter-chunk delay in `_handle` reply loop
