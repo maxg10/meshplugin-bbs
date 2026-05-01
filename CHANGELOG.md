@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.6 (2026-05-01)
+- fix: _c_about returns default when about_message is empty string, support \n in config
+
 ## v1.0.5 (2026-05-01)
 - feat: !bbs about command with configurable about_message config field
 

@@ -387,7 +387,8 @@ class BbsPlugin(MeshPlugin):
     def _c_about(self):
         bbs_name = self.config.get('bbs_name', 'MeshBBS')
         default = f'{bbs_name}\n📡 Meshtastic Network Mapper\n🌍 meshtastic.world\nTry it: !bbs help'
-        return self.config.get('about_message', default)
+        msg = self.config.get('about_message', '') or default
+        return msg.replace('\\n', '\n')
 
     # ── API route handlers ───────────────────────────────────────────────────
 
